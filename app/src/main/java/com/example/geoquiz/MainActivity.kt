@@ -83,15 +83,23 @@ fun GeoQuizScreen() {
 
     var currentIndex by rememberSaveable { mutableIntStateOf(0) }  // номер текущего вопроса
     var answered by rememberSaveable { mutableStateOf(false) }     // ответил ли на текущий вопрос
+    var correctCount by rememberSaveable { mutableIntStateOf(0) }  // количество правильных ответов
 
     val isLast = currentIndex == questions.lastIndex
 
     fun checkAnswer(userAnswer: Boolean) {
         val isCorrect = userAnswer == questions[currentIndex].answer
+        if (isCorrect) correctCount++
         answered = true
 
-        val message = if (isCorrect) "Correct!" else "Incorrect!"
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        val message = if (isLast) {
+            "Правильных ответов: $correctCount из ${questions.size}"
+        } else if (isCorrect) {
+            "Correct!"
+        } else {
+            "Incorrect!"
+        }
+        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
     }
 
     Column(
