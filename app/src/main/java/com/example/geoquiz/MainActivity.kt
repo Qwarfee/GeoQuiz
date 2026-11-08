@@ -84,6 +84,8 @@ fun GeoQuizScreen() {
     var currentIndex by rememberSaveable { mutableIntStateOf(0) }  // номер текущего вопроса
     var answered by rememberSaveable { mutableStateOf(false) }     // ответил ли на текущий вопрос
 
+    val isLast = currentIndex == questions.lastIndex
+
     fun checkAnswer(userAnswer: Boolean) {
         val isCorrect = userAnswer == questions[currentIndex].answer
         answered = true
@@ -140,16 +142,18 @@ fun GeoQuizScreen() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // кнопка NEXT: следующий вопрос
+        // кнопка NEXT: блокируется и исчезает после ответа на последний вопрос
         Row(
             horizontalArrangement = Arrangement.End,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
         ) {
-            QuizButton(text = "NEXT", showArrow = true) {
-                currentIndex = (currentIndex + 1) % questions.size
-                answered = false
+            QuizButton(text = "NEXT", visible = !(isLast && answered), showArrow = true) {
+                if (!isLast) {
+                    currentIndex++
+                    answered = false
+                }
             }
         }
     }
