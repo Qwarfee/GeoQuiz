@@ -82,9 +82,12 @@ fun GeoQuizScreen() {
     val context = LocalContext.current
 
     var currentIndex by rememberSaveable { mutableIntStateOf(0) }  // номер текущего вопроса
+    var answered by rememberSaveable { mutableStateOf(false) }     // ответил ли на текущий вопрос
 
     fun checkAnswer(userAnswer: Boolean) {
         val isCorrect = userAnswer == questions[currentIndex].answer
+        answered = true
+
         val message = if (isCorrect) "Correct!" else "Incorrect!"
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
@@ -124,15 +127,15 @@ fun GeoQuizScreen() {
                 .padding(24.dp)
         )
 
-        // кнопки TRUE и FALSE
+        // кнопки TRUE и FALSE: исчезают после ответа
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
         ) {
-            QuizButton(text = "TRUE") { checkAnswer(true) }
-            QuizButton(text = "FALSE") { checkAnswer(false) }
+            QuizButton(text = "TRUE", visible = !answered) { checkAnswer(true) }
+            QuizButton(text = "FALSE", visible = !answered) { checkAnswer(false) }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -146,6 +149,7 @@ fun GeoQuizScreen() {
         ) {
             QuizButton(text = "NEXT", showArrow = true) {
                 currentIndex = (currentIndex + 1) % questions.size
+                answered = false
             }
         }
     }
